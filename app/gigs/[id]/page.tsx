@@ -48,7 +48,7 @@ export default function GigDetail() {
       })
       setShowApplyForm(false)
       setMessage('')
-    } catch (err) {
+    } catch {
       // Error handled by mutation
     }
   }
@@ -61,22 +61,24 @@ export default function GigDetail() {
     const date = new Date(dateStr)
     return date.toLocaleDateString('en-US', {
       weekday: 'long',
-      year: 'numeric',
-      month: 'long',
+      month: 'short',
       day: 'numeric',
-    })
+    }).toLowerCase()
   }
 
   const formatPay = (min: number | null, max: number | null) => {
-    if (!min && !max) return 'TBD'
+    if (!min && !max) return 'tbd'
     if (min === max) return `$${min}`
-    return `$${min ?? 0} - $${max ?? 0}`
+    return `$${min ?? 0}-${max ?? 0}`
   }
 
   if (gigLoading || userLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
+          <span className="text-[var(--muted)] text-sm">loading gig...</span>
+        </div>
       </div>
     )
   }
@@ -90,246 +92,340 @@ export default function GigDetail() {
   const canApply = profile?.user_type === 'musician' && !existingApplication && gig.status === 'open'
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <Link href="/dashboard" className="text-blue-600 hover:underline mb-4 inline-block">
-          &larr; Back to gigs
+    <div className="min-h-screen py-8">
+      <div className="max-w-4xl mx-auto px-6">
+        {/* back link */}
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-2 text-[var(--muted)] hover:text-[var(--foreground)] mb-6 transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          back to discover
         </Link>
 
-        <div className="bg-white rounded-xl shadow overflow-hidden">
-          {/* Header Image */}
-          <div className="relative h-64 md:h-80">
-            <img
-              src={gig.image_url || '/placeholder-venue.jpg'}
-              alt={gig.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute top-4 right-4 bg-green-500 text-white font-bold px-4 py-2 rounded-lg text-lg">
-              {formatPay(gig.pay_min, gig.pay_max)}
-            </div>
-            {gig.status !== 'open' && (
-              <div className="absolute top-4 left-4 bg-gray-800 text-white px-4 py-2 rounded-lg">
-                {gig.status === 'filled' ? 'Position Filled' : 'Closed'}
+        <article className="card-flat overflow-hidden animate-fade-in-up">
+          {/* hero image */}
+          {gig.image_url && (
+            <div className="relative h-64 md:h-80 overflow-hidden">
+              <img
+                src={gig.image_url}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+
+              {/* pay badge */}
+              <div className="absolute bottom-4 left-6">
+                <span className="inline-flex items-center px-4 py-2 rounded-full bg-[var(--accent)] text-white font-bold text-lg">
+                  {formatPay(gig.pay_min, gig.pay_max)}
+                </span>
               </div>
-            )}
-          </div>
 
-          {/* Content */}
-          <div className="p-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{gig.title}</h1>
+              {/* status badge */}
+              {gig.status !== 'open' && (
+                <div className="absolute top-4 left-6">
+                  <span className="tag bg-[var(--foreground)] text-[var(--background)]">
+                    {gig.status === 'filled' ? 'position filled' : 'closed'}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
 
-            {/* Venue Info */}
+          {/* content */}
+          <div className="p-6 md:p-8">
+            {/* title */}
+            <h1 className="heading-lg !normal-case mb-4">{gig.title}</h1>
+
+            {/* venue info */}
             {gig.venue && (
               <Link
                 href={`/profile/${gig.venue.id}`}
-                className="flex items-center gap-3 mb-4 hover:opacity-80"
+                className="inline-flex items-center gap-3 mb-6 group"
               >
-                <img
-                  src={gig.venue.avatar_url || '/placeholder-avatar.jpg'}
-                  alt={gig.venue.name || 'Venue'}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-                <span className="font-medium text-gray-700">
-                  {gig.venue.venue_name || gig.venue.name || 'Unknown Venue'}
+                <div className="w-10 h-10 rounded-full bg-[var(--surface-hover)] overflow-hidden">
+                  {gig.venue.avatar_url ? (
+                    <img
+                      src={gig.venue.avatar_url}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-[var(--muted)]">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                <span className="font-medium group-hover:text-[var(--accent)] transition-colors">
+                  {gig.venue.venue_name || gig.venue.name}
                 </span>
               </Link>
             )}
 
-            {/* Quick Info */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 py-4 border-y">
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+            {/* quick info grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-6 border-y border-[var(--border)] mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[var(--surface-hover)] flex items-center justify-center">
+                  <svg className="w-5 h-5 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
                 <div>
-                  <p className="text-sm text-gray-500">Date</p>
-                  <p className="font-medium">{formatDate(gig.date)}</p>
+                  <p className="text-xs text-[var(--muted)] lowercase">date</p>
+                  <p className="font-medium text-sm">{formatDate(gig.date)}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[var(--surface-hover)] flex items-center justify-center">
+                  <svg className="w-5 h-5 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
                 <div>
-                  <p className="text-sm text-gray-500">Time</p>
-                  <p className="font-medium">
+                  <p className="text-xs text-[var(--muted)] lowercase">time</p>
+                  <p className="font-medium text-sm">
                     {gig.start_time}
                     {gig.end_time && ` - ${gig.end_time}`}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[var(--surface-hover)] flex items-center justify-center">
+                  <svg className="w-5 h-5 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  </svg>
+                </div>
                 <div>
-                  <p className="text-sm text-gray-500">Location</p>
-                  <p className="font-medium">{gig.location}</p>
+                  <p className="text-xs text-[var(--muted)] lowercase">location</p>
+                  <p className="font-medium text-sm">{gig.location}</p>
                 </div>
               </div>
             </div>
 
-            {/* Genres */}
+            {/* genres */}
             <div className="mb-6">
-              <h3 className="font-semibold mb-2">Genres</h3>
+              <h3 className="heading-sm mb-3">genres</h3>
               <div className="flex flex-wrap gap-2">
                 {gig.genres.map((genre: string) => (
-                  <span key={genre} className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">
-                    {genre}
+                  <span key={genre} className="tag tag-accent">
+                    {genre.toLowerCase()}
                   </span>
                 ))}
               </div>
             </div>
 
-            {/* Description */}
+            {/* description */}
             <div className="mb-6">
-              <h3 className="font-semibold mb-2">About this Gig</h3>
-              <p className="text-gray-700 whitespace-pre-wrap">{gig.description}</p>
+              <h3 className="heading-sm mb-3">about this gig</h3>
+              <p className="text-[var(--muted)] leading-relaxed whitespace-pre-wrap">
+                {gig.description}
+              </p>
             </div>
 
-            {/* Requirements */}
+            {/* requirements */}
             {gig.requirements && (
-              <div className="mb-6">
-                <h3 className="font-semibold mb-2">Requirements</h3>
-                <p className="text-gray-700 whitespace-pre-wrap">{gig.requirements}</p>
-              </div>
-            )}
-
-            {/* Apply Section */}
-            {!profile && (
-              <div className="bg-gray-50 p-4 rounded-lg text-center">
-                <p className="text-gray-600 mb-2">Sign in to apply for this gig</p>
-                <Link href="/login" className="text-blue-600 hover:underline font-medium">
-                  Log in or Sign up
-                </Link>
-              </div>
-            )}
-
-            {existingApplication && (
-              <div
-                className={`p-4 rounded-lg ${
-                  existingApplication.status === 'accepted'
-                    ? 'bg-green-50'
-                    : existingApplication.status === 'rejected'
-                    ? 'bg-red-50'
-                    : 'bg-blue-50'
-                }`}
-              >
-                <p className="font-medium">
-                  {existingApplication.status === 'accepted' && 'Your application was accepted!'}
-                  {existingApplication.status === 'rejected' && 'Your application was not selected.'}
-                  {existingApplication.status === 'pending' && 'Your application is pending review.'}
+              <div className="mb-8">
+                <h3 className="heading-sm mb-3">requirements</h3>
+                <p className="text-[var(--muted)] leading-relaxed whitespace-pre-wrap">
+                  {gig.requirements}
                 </p>
               </div>
             )}
 
-            {applyMutation.isSuccess && (
-              <div className="bg-green-50 text-green-700 p-4 rounded-lg">
-                Application submitted successfully!
-              </div>
-            )}
+            {/* apply section */}
+            <div className="pt-6 border-t border-[var(--border)]">
+              {!profile && (
+                <div className="card-flat p-6 text-center">
+                  <p className="text-[var(--muted)] mb-4">sign in to apply for this gig</p>
+                  <Link href="/login" className="btn btn-primary">
+                    log in or sign up
+                  </Link>
+                </div>
+              )}
 
-            {canApply && !showApplyForm && (
-              <button
-                onClick={() => setShowApplyForm(true)}
-                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 font-medium"
-              >
-                Apply for this Gig
-              </button>
-            )}
-
-            {showApplyForm && (
-              <form onSubmit={handleApply} className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold mb-4">Apply for this Gig</h3>
-                {applyMutation.isError && (
-                  <div className="bg-red-50 text-red-500 p-3 rounded mb-4">
-                    {applyMutation.error?.message || 'Failed to submit application'}
+              {existingApplication && (
+                <div
+                  className={`p-5 rounded-lg ${
+                    existingApplication.status === 'accepted'
+                      ? 'bg-[var(--accent-soft)]'
+                      : existingApplication.status === 'rejected'
+                      ? 'bg-[var(--danger-soft)]'
+                      : 'bg-[var(--surface-hover)]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    {existingApplication.status === 'accepted' && (
+                      <svg className="w-5 h-5 text-[var(--accent)]" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                    {existingApplication.status === 'rejected' && (
+                      <svg className="w-5 h-5 text-[var(--danger)]" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                    {existingApplication.status === 'pending' && (
+                      <svg className="w-5 h-5 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    )}
+                    <span className="font-medium">
+                      {existingApplication.status === 'accepted' && 'your application was accepted!'}
+                      {existingApplication.status === 'rejected' && 'your application was not selected'}
+                      {existingApplication.status === 'pending' && 'your application is pending review'}
+                    </span>
                   </div>
-                )}
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Message to the venue *</label>
-                  <textarea
-                    required
-                    rows={4}
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Introduce yourself, share your experience, and why you'd be great for this gig..."
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
                 </div>
-                <div className="flex gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowApplyForm(false)}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={applyMutation.isPending}
-                    className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
-                  >
-                    {applyMutation.isPending ? 'Submitting...' : 'Submit Application'}
-                  </button>
-                </div>
-              </form>
-            )}
+              )}
 
-            {/* Venue Owner View - Applications */}
+              {applyMutation.isSuccess && (
+                <div className="p-5 rounded-lg bg-[var(--accent-soft)] text-[var(--accent)] animate-fade-in">
+                  application submitted successfully!
+                </div>
+              )}
+
+              {canApply && !showApplyForm && (
+                <button
+                  onClick={() => setShowApplyForm(true)}
+                  className="btn btn-accent btn-lg w-full group"
+                >
+                  <span>apply for this gig</span>
+                  <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </button>
+              )}
+
+              {showApplyForm && (
+                <form onSubmit={handleApply} className="card-flat p-6 animate-fade-in-up">
+                  <h3 className="heading-sm mb-4">apply for this gig</h3>
+                  {applyMutation.isError && (
+                    <div className="mb-4 alert-error">
+                      {applyMutation.error?.message || 'failed to submit application'}
+                    </div>
+                  )}
+                  <div className="mb-4">
+                    <label className="block text-xs font-medium text-[var(--muted)] mb-2 lowercase">
+                      message to the venue
+                    </label>
+                    <textarea
+                      required
+                      rows={4}
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="introduce yourself, share your experience, and why you'd be great for this gig..."
+                      className="input resize-none"
+                    />
+                  </div>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowApplyForm(false)}
+                      className="btn btn-ghost flex-1"
+                    >
+                      cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={applyMutation.isPending}
+                      className="btn btn-accent flex-1"
+                    >
+                      {applyMutation.isPending ? (
+                        <span className="flex items-center gap-2">
+                          <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                          </svg>
+                          submitting...
+                        </span>
+                      ) : (
+                        'submit application'
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+
+            {/* venue owner view - applications */}
             {isOwner && (
-              <div className="mt-8 border-t pt-6">
-                <h3 className="font-semibold text-xl mb-4">Applications ({applications.length})</h3>
+              <div className="mt-8 pt-8 border-t border-[var(--border)]">
+                <h3 className="heading-md mb-6">
+                  applications
+                  <span className="ml-2 text-[var(--muted)]">({applications.length})</span>
+                </h3>
                 {applications.length === 0 ? (
-                  <p className="text-gray-500">No applications yet.</p>
+                  <div className="text-center py-12">
+                    <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-[var(--surface-hover)] flex items-center justify-center">
+                      <svg className="w-6 h-6 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    </div>
+                    <p className="text-[var(--muted)]">no applications yet</p>
+                  </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-4 stagger-children">
                     {applications.map((app) => (
-                      <div key={app.id} className="border rounded-lg p-4">
-                        <div className="flex justify-between items-start mb-2">
+                      <div key={app.id} className="card-flat p-5">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                           <Link
                             href={`/profile/${app.musician?.id}`}
-                            className="flex items-center gap-3 hover:opacity-80"
+                            className="flex items-center gap-3 group"
                           >
-                            <img
-                              src={app.musician?.avatar_url || '/placeholder-avatar.jpg'}
-                              alt={app.musician?.name || 'Musician'}
-                              className="w-10 h-10 rounded-full object-cover"
-                            />
+                            <div className="w-10 h-10 rounded-full bg-[var(--surface-hover)] overflow-hidden">
+                              {app.musician?.avatar_url ? (
+                                <img
+                                  src={app.musician.avatar_url}
+                                  alt=""
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-[var(--muted)]">
+                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                  </svg>
+                                </div>
+                              )}
+                            </div>
                             <div>
-                              <p className="font-medium">{app.musician?.name || 'Unknown'}</p>
-                              <p className="text-sm text-gray-500">{app.musician?.email || ''}</p>
+                              <p className="font-medium group-hover:text-[var(--accent)] transition-colors">
+                                {app.musician?.name || 'unknown'}
+                              </p>
+                              <p className="text-xs text-[var(--muted)]">{app.musician?.email || ''}</p>
                             </div>
                           </Link>
                           <span
-                            className={`text-sm px-2 py-1 rounded ${
+                            className={`badge ${
                               app.status === 'accepted'
-                                ? 'bg-green-100 text-green-800'
+                                ? 'badge-musician'
                                 : app.status === 'rejected'
-                                ? 'bg-red-100 text-red-800'
-                                : 'bg-yellow-100 text-yellow-800'
+                                ? 'bg-[var(--danger-soft)] text-[var(--danger-text)]'
+                                : 'bg-amber-500/20 text-amber-600 dark:text-amber-400'
                             }`}
                           >
                             {app.status}
                           </span>
                         </div>
-                        <p className="text-gray-700 mb-4">{app.message}</p>
+                        <p className="text-[var(--muted)] text-sm mb-4">{app.message}</p>
                         {app.status === 'pending' && (
                           <div className="flex gap-2">
                             <button
                               onClick={() => handleUpdateStatus(app.id, 'accepted')}
                               disabled={updateStatusMutation.isPending}
-                              className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 disabled:bg-gray-400"
+                              className="btn btn-accent btn-sm"
                             >
-                              Accept
+                              accept
                             </button>
                             <button
                               onClick={() => handleUpdateStatus(app.id, 'rejected')}
                               disabled={updateStatusMutation.isPending}
-                              className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700 disabled:bg-gray-400"
+                              className="btn btn-ghost btn-sm text-[var(--danger)] hover:bg-[var(--danger-soft)]"
                             >
-                              Reject
+                              reject
                             </button>
                           </div>
                         )}
@@ -340,7 +436,7 @@ export default function GigDetail() {
               </div>
             )}
           </div>
-        </div>
+        </article>
       </div>
     </div>
   )

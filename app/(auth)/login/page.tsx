@@ -22,57 +22,79 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow">
-        <img
-          src="/thegreenroom.png"
-          alt="TheGreenRoom Logo"
-          className="flex items-center justify-center"
-        />
-        <h2 className="text-3xl font-bold text-center">Log In</h2>
+    <div className="min-h-screen flex items-center justify-center px-6">
+      <div className="w-full max-w-sm animate-fade-in-up">
+        {/* brand */}
+        <a href="/" className="block text-center mb-12">
+          <span className="heading-lg">thegreenroom</span>
+        </a>
 
+        {/* title */}
+        <h1 className="heading-xl text-center mb-8">welcome back</h1>
+
+        {/* error */}
         {signInMutation.isError && (
-          <div className="bg-red-50 text-red-500 p-3 rounded">
-            {signInMutation.error?.message || 'Login failed'}
+          <div className="mb-6 alert-error animate-fade-in">
+            {signInMutation.error?.message || 'login failed. please try again.'}
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-6">
+        {/* form */}
+        <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium mb-2">Email</label>
+            <label className="block text-xs font-medium text-[var(--muted)] mb-2 lowercase">
+              email
+            </label>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="you@example.com"
+              className="input"
+              autoComplete="email"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Password</label>
+            <label className="block text-xs font-medium text-[var(--muted)] mb-2 lowercase">
+              password
+            </label>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="your password"
+              className="input"
+              autoComplete="current-password"
             />
           </div>
 
           <button
             type="submit"
             disabled={signInMutation.isPending}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:bg-gray-400"
+            className="btn btn-primary w-full btn-lg mt-2"
           >
-            {signInMutation.isPending ? 'Logging in...' : 'Log In'}
+            {signInMutation.isPending ? (
+              <span className="flex items-center gap-2">
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                signing in...
+              </span>
+            ) : (
+              'sign in'
+            )}
           </button>
         </form>
 
-        <p className="text-center text-sm">
-          Don&apos;t have an account?{' '}
-          <a href="/signup" className="text-blue-600 hover:underline">
-            Sign up
+        {/* signup link */}
+        <p className="text-center text-sm text-[var(--muted)] mt-8">
+          don't have an account?{' '}
+          <a href="/signup" className="text-[var(--accent)] hover:underline font-medium">
+            get started
           </a>
         </p>
       </div>
