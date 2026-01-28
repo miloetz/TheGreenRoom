@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  /* background & foreground */
-  --background: #fafaf9;
-  --foreground: #18181b;
-  --surface: #ffffff;
-  --surface-hover: #f4f4f5;
+  /* background & foreground - cream/off-white */
+  --background: #faf8f4;
+  --foreground: #1a1a1a;
+  --surface: #fffdf9;
+  --surface-hover: #f5f3ef;
 
-  /* accent - the green room */
-  --accent: #10b981;
-  --accent-hover: #059669;
-  --accent-soft: #d1fae5;
+  /* accent - the green room brand */
+  --accent: #235823;
+  --accent-hover: #1a4319;
+  --accent-soft: #e8f0e8;
 
   /* muted tones */
   --muted: #71717a;
@@ -55,13 +55,13 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
-    --background: #09090b;
-    --foreground: #fafafa;
-    --surface: #18181b;
-    --surface-hover: #27272a;
-    --accent: #34d399;
-    --accent-hover: #10b981;
-    --accent-soft: #064e3b;
+    --background: #0f0f0f;
+    --foreground: #faf8f4;
+    --surface: #1a1a1a;
+    --surface-hover: #252525;
+    --accent: #4a9c4a;
+    --accent-hover: #5cb85c;
+    --accent-soft: #1a2e1a;
     --muted: #a1a1aa;
     --muted-soft: #71717a;
     --border: #27272a;
@@ -75,13 +75,13 @@
 }
 
 :root.dark {
-  --background: #09090b;
-  --foreground: #fafafa;
-  --surface: #18181b;
-  --surface-hover: #27272a;
-  --accent: #34d399;
-  --accent-hover: #10b981;
-  --accent-soft: #064e3b;
+  --background: #0f0f0f;
+  --foreground: #faf8f4;
+  --surface: #1a1a1a;
+  --surface-hover: #252525;
+  --accent: #4a9c4a;
+  --accent-hover: #5cb85c;
+  --accent-soft: #1a2e1a;
   --muted: #a1a1aa;
   --muted-soft: #71717a;
   --border: #27272a;
@@ -158,12 +158,12 @@ a:hover {
 
 @media (prefers-color-scheme: dark) {
   :root:not(.light) .logo {
-    filter: brightness(2);
+    filter: brightness(1.6) saturate(1.2);
   }
 }
 
 :root.dark .logo {
-  filter: brightness(5) hue-rotate(300deg) contrast(0.9);
+  filter: brightness(1.6) saturate(1.2);
 }
 
 /* input reset */

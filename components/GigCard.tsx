@@ -46,7 +46,16 @@ export default function GigCard({ gig }: GigCardProps) {
             <span className="text-xs text-[var(--muted)]">
               {formatDate(gig.date)}
             </span>
+            {/* gig status */}
+            <span className="flex items-center justify-between mb-3">
+              {gig.status === 'open' ? (
+                <span className="badge badge-musician">open</span>
+              ) : (
+                <span className="badge badge-venue">booked</span>
+              )}
+            </span>
           </div>
+
 
           {/* title */}
           <h3 className="heading-sm !normal-case font-bold mb-1 line-clamp-2 group-hover:text-[var(--accent)] transition-colors">

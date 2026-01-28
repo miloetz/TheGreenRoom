@@ -257,27 +257,34 @@ export default function GigDetail() {
                       : 'bg-[var(--surface-hover)]'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      {existingApplication.status === 'accepted' && (
+                        <svg className="w-5 h-5 text-[var(--accent)]" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                      {existingApplication.status === 'rejected' && (
+                        <svg className="w-5 h-5 text-[var(--danger)]" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                      {existingApplication.status === 'pending' && (
+                        <svg className="w-5 h-5 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      )}
+                      <span className="font-medium">
+                        {existingApplication.status === 'accepted' && 'your application was accepted!'}
+                        {existingApplication.status === 'rejected' && 'your application was not selected'}
+                        {existingApplication.status === 'pending' && 'your application is pending review'}
+                      </span>
+                    </div>
                     {existingApplication.status === 'accepted' && (
-                      <svg className="w-5 h-5 text-[var(--accent)]" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
+                      <Link href="/messages" className="btn btn-primary btn-sm">
+                        message venue
+                      </Link>
                     )}
-                    {existingApplication.status === 'rejected' && (
-                      <svg className="w-5 h-5 text-[var(--danger)]" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                      </svg>
-                    )}
-                    {existingApplication.status === 'pending' && (
-                      <svg className="w-5 h-5 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    )}
-                    <span className="font-medium">
-                      {existingApplication.status === 'accepted' && 'your application was accepted!'}
-                      {existingApplication.status === 'rejected' && 'your application was not selected'}
-                      {existingApplication.status === 'pending' && 'your application is pending review'}
-                    </span>
                   </div>
                 </div>
               )}
@@ -428,6 +435,11 @@ export default function GigDetail() {
                               reject
                             </button>
                           </div>
+                        )}
+                        {app.status === 'accepted' && (
+                          <Link href="/messages" className="btn btn-primary btn-sm">
+                            message musician
+                          </Link>
                         )}
                       </div>
                     ))}

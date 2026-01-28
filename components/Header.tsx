@@ -42,7 +42,7 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* logo */}
-          <a href="/dashboard" className="block">
+          <a href={user ? "/dashboard" : "/"} className="block">
             <img
               src="/thegreenroom.png"
               alt="the green room"
