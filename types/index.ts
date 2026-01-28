@@ -60,6 +60,31 @@ export interface GigFilters {
   payMax?: number
 }
 
+// Conversation & Message Types
+export interface Conversation {
+  id: string
+  gig_id?: string
+  application_id?: string
+  musician_id: string
+  venue_id: string
+  created_at: string
+  updated_at: string
+  gig?: Gig
+  musician?: Profile
+  venue?: Profile
+  last_message?: Message
+}
+
+export interface Message {
+  id: string
+  conversation_id: string
+  sender_id: string
+  content: string
+  read_at?: string
+  created_at: string
+  sender?: Profile
+}
+
 // Genre options
 export const GENRES = [
   'Rock',

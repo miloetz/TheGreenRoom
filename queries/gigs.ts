@@ -23,10 +23,10 @@ export async function getOpenGigs(filters: GigFilters = {}): Promise<Gig[]> {
     query = query.lte('date', filters.dateTo)
   }
   if (filters.payMin) {
-    query = query.gte('pay_max', filters.payMin)
+    query = query.gte('pay_min', filters.payMin)
   }
   if (filters.payMax) {
-    query = query.lte('pay_min', filters.payMax)
+    query = query.lte('pay_max', filters.payMax)
   }
   if (filters.genres && filters.genres.length > 0) {
     query = query.overlaps('genres', filters.genres)
