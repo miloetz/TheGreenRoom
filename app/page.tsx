@@ -7,15 +7,15 @@ import { useEffect } from 'react'
 import { LogoAnimation } from '@/components/LogoAnimation'
 
 export default function Home() {
-  const { user, isLoading } = useAuthListener()
+  const { user, loading } = useAuthListener()
 
   useEffect(() => {
-    if (!isLoading && user) {
+    if (!loading && user) {
       redirect('/dashboard')
     }
-  }, [user, isLoading])
+  }, [user, loading])
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="w-10 h-10 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
