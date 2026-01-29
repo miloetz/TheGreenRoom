@@ -21,6 +21,13 @@ export default function GigCard({ gig }: GigCardProps) {
     return `$${min}-${max}`
   }
 
+  const formatTime = (timeStr: string) => {
+    const [hours, minutes] = timeStr.split(':').map(Number)
+    const period = hours >= 12 ? 'pm' : 'am'
+    const hour12 = hours % 12 || 12
+    return `${hour12}:${minutes.toString().padStart(2, '0')}${period}`
+  }
+
   return (
     <Link href={`/gigs/${gig.id}`} className="block">
       <article className="card overflow-hidden break-inside-avoid mb-4 group">
@@ -38,22 +45,21 @@ export default function GigCard({ gig }: GigCardProps) {
 
         {/* content */}
         <div className="p-5">
-          {/* pay badge */}
+          {/* pay badge & status */}
           <div className="flex items-center justify-between mb-3">
             <span className="tag tag-accent font-semibold">
               {formatPay(gig.pay_min, gig.pay_max)}
             </span>
-            <span className="text-xs text-[var(--muted)]">
-              {formatDate(gig.date)}
-            </span>
-            {/* gig status */}
-            <span className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-[var(--muted)]">
+                {formatDate(gig.date)}
+              </span>
               {gig.status === 'open' ? (
                 <span className="badge badge-musician">open</span>
               ) : (
                 <span className="badge badge-venue">booked</span>
               )}
-            </span>
+            </div>
           </div>
 
 
@@ -81,7 +87,7 @@ export default function GigCard({ gig }: GigCardProps) {
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {gig.start_time}
+              {formatTime(gig.start_time)}
             </span>
           </div>
 

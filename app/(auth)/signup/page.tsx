@@ -33,10 +33,6 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-sm animate-fade-in-up">
-        {/* brand */}
-        <a href="/" className="block text-center mb-12">
-          <span className="heading-lg">thegreenroom</span>
-        </a>
 
         {/* title */}
         <h1 className="heading-xl text-center mb-3">join the room</h1>

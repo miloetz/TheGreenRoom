@@ -10,7 +10,6 @@ export async function getOpenGigs(filters: GigFilters = {}): Promise<Gig[]> {
       *,
       venue:profiles!gigs_venue_id_fkey(*)
     `)
-    .eq('status', 'open')
     .order('date', { ascending: true })
 
   if (filters.location) {

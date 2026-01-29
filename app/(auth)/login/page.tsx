@@ -22,12 +22,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6">
+    <div className="min-h-screen flex items-center justify-center px-3">
       <div className="w-full max-w-sm animate-fade-in-up">
-        {/* brand */}
-        <a href="/" className="block text-center mb-12">
-          <span className="heading-lg">thegreenroom</span>
-        </a>
 
         {/* title */}
         <h1 className="heading-xl text-center mb-8">welcome back</h1>
