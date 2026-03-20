@@ -100,3 +100,16 @@ export async function updateGig(gigId: string, input: UpdateGigInput) {
 
   return data
 }
+
+export async function deleteGig(gigId: string) {
+  const { error } = await supabase
+    .from('gigs')
+    .delete()
+    .eq('id', gigId)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return true
+}

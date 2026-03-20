@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getOpenGigs, getGigById, getGigsByVenue } from '@/queries/gigs'
-import { createGig, updateGigStatus, updateGig, CreateGigInput, UpdateGigInput } from '@/mutations/gigs'
+import { createGig, updateGigStatus, updateGig, deleteGig, CreateGigInput, UpdateGigInput } from '@/mutations/gigs'
 import { GigFilters } from '@/types'
 
 export const gigKeys = {
@@ -68,6 +68,17 @@ export function useUpdateGig() {
     onSuccess: (_, { gigId }) => {
       queryClient.invalidateQueries({ queryKey: gigKeys.detail(gigId) })
       queryClient.invalidateQueries({ queryKey: gigKeys.lists() })
+    },
+  })
+}
+
+export function useDeleteGig() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (gigId: string) => deleteGig(gigId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: gigKeys.all })
     },
   })
 }

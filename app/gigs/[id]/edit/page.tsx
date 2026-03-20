@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { GENRES } from '@/types'
 import { useCurrentUser } from '@/hooks/useProfiles'
-import { useGig, useUpdateGig } from '@/hooks/useGigs'
+import { useGig, useUpdateGig, useDeleteGig } from '@/hooks/useGigs'
 
 export default function EditGig() {
   const router = useRouter()
@@ -16,6 +16,8 @@ export default function EditGig() {
   const profile = currentUserData?.profile
   const { data: gig, isLoading: gigLoading } = useGig(gigId)
   const updateGigMutation = useUpdateGig()
+  const deleteGigMutation = useDeleteGig()
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   const [formData, setFormData] = useState({
     title: '',
@@ -100,6 +102,15 @@ export default function EditGig() {
         },
       })
       router.push(`/gigs/${gigId}`)
+    } catch {
+      // Error handled by mutation
+    }
+  }
+
+  const handleDelete = async () => {
+    try {
+      await deleteGigMutation.mutateAsync(gigId)
+      router.push('/dashboard')
     } catch {
       // Error handled by mutation
     }
@@ -354,6 +365,49 @@ export default function EditGig() {
               </button>
             </div>
           </form>
+
+          {/* danger zone */}
+          <div className="mt-10 pt-8 border-t border-[var(--border)]">
+            <h2 className="text-sm font-medium text-[var(--danger)] mb-3">danger zone</h2>
+            {!showDeleteConfirm ? (
+              <button
+                type="button"
+                onClick={() => setShowDeleteConfirm(true)}
+                className="btn btn-ghost text-[var(--danger)] hover:bg-red-500/10"
+              >
+                delete this gig
+              </button>
+            ) : (
+              <div className="p-4 bg-red-500/10 rounded-lg border border-red-500/20">
+                <p className="text-sm text-[var(--foreground)] mb-4">
+                  are you sure? this will permanently delete this gig and all applications.
+                </p>
+                {deleteGigMutation.isError && (
+                  <p className="text-sm text-[var(--danger)] mb-4">
+                    {deleteGigMutation.error?.message || 'failed to delete gig'}
+                  </p>
+                )}
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowDeleteConfirm(false)}
+                    className="btn btn-ghost btn-sm"
+                    disabled={deleteGigMutation.isPending}
+                  >
+                    cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={deleteGigMutation.isPending}
+                    className="btn btn-sm bg-[var(--danger)] text-white hover:opacity-90"
+                  >
+                    {deleteGigMutation.isPending ? 'deleting...' : 'yes, delete'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
