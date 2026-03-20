@@ -26,9 +26,9 @@ export default function Home() {
   if (user) return null
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="h-[calc(100dvh-6rem)] flex flex-col overflow-hidden">
       {/* hero */}
-      <section className="flex-1 flex items-center justify-center py-24 relative overflow-hidden">
+      <section className="flex-1 flex items-center justify-center relative overflow-hidden">
         <LogoAnimation />
         <div className="relative z-10 max-w-2xl mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
@@ -47,11 +47,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* footer */}
-      <footer className="py-4 text-center text-sm text-[var(--muted)]">
-        <p>thegreenroom.</p>
-      </footer>
     </div>
   )
 }

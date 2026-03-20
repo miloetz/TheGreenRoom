@@ -1,9 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getProfileById, getCurrentUser } from '@/queries/profiles'
+import { getProfileById, getCurrentUser, getProfiles } from '@/queries/profiles'
 import { updateProfile, UpdateProfileInput } from '@/mutations/profiles'
+import { ProfileFilters } from '@/types'
 
 export const profileKeys = {
   all: ['profiles'] as const,
+  lists: () => [...profileKeys.all, 'list'] as const,
+  list: (filters: ProfileFilters) => [...profileKeys.lists(), filters] as const,
   details: () => [...profileKeys.all, 'detail'] as const,
   detail: (id: string) => [...profileKeys.details(), id] as const,
   currentUser: () => [...profileKeys.all, 'currentUser'] as const,
@@ -34,5 +37,12 @@ export function useUpdateProfile() {
       queryClient.invalidateQueries({ queryKey: profileKeys.detail(userId) })
       queryClient.invalidateQueries({ queryKey: profileKeys.currentUser() })
     },
+  })
+}
+
+export function useProfiles(filters: ProfileFilters = {}) {
+  return useQuery({
+    queryKey: profileKeys.list(filters),
+    queryFn: () => getProfiles(filters),
   })
 }

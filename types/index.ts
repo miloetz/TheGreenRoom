@@ -60,6 +60,18 @@ export interface GigFilters {
   payMax?: number
 }
 
+export interface ProfileFilters {
+  userType?: UserType
+  search?: string              // name search (ilike)
+  location?: string            // ilike
+  genres?: string[]            // overlaps
+  instruments?: string[]       // overlaps (musicians only)
+  experienceMin?: number       // gte (musicians only)
+  experienceMax?: number       // lte (musicians only)
+  capacityMin?: number         // gte (venues only)
+  capacityMax?: number         // lte (venues only)
+}
+
 // Conversation & Message Types
 export interface Conversation {
   id: string
@@ -85,6 +97,21 @@ export interface Message {
   sender?: Profile
 }
 
+// Notification Types
+export type NotificationType = 'message' | 'application_status' | 'gig_updated' | 'new_application'
+
+export interface Notification {
+  id: string
+  user_id: string
+  type: NotificationType
+  title: string
+  body?: string
+  link?: string
+  read_at?: string
+  related_id?: string
+  created_at: string
+}
+
 // Genre options
 export const GENRES = [
   'Rock',
@@ -107,4 +134,26 @@ export const GENRES = [
   'Acoustic',
   'Cover Band',
   'Original Music',
+] as const
+
+// Instrument options
+export const INSTRUMENTS = [
+  'Vocals',
+  'Guitar',
+  'Bass',
+  'Drums',
+  'Piano',
+  'Keyboard',
+  'Saxophone',
+  'Trumpet',
+  'Violin',
+  'Cello',
+  'Flute',
+  'Harmonica',
+  'Banjo',
+  'Mandolin',
+  'Ukulele',
+  'DJ',
+  'Producer',
+  'Other',
 ] as const

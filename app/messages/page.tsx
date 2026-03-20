@@ -1,11 +1,15 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useCurrentUser } from '@/hooks/useProfiles'
 import { useConversations, useMessages, useSendMessage, useMarkAsRead } from '@/hooks/useMessages'
 import { Conversation } from '@/types'
 
-export default function Messages() {
+function MessagesContent() {
+  const searchParams = useSearchParams()
+  const conversationIdFromUrl = searchParams.get('conversation')
+
   const { data: currentUserData, isLoading: userLoading } = useCurrentUser()
   const profile = currentUserData?.profile
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
@@ -13,6 +17,16 @@ export default function Messages() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const { data: conversations = [], isLoading: convoLoading } = useConversations(profile?.id)
+
+  // Auto-select conversation from URL param
+  useEffect(() => {
+    if (conversationIdFromUrl && conversations.length > 0 && !selectedConversation) {
+      const convo = conversations.find(c => c.id === conversationIdFromUrl)
+      if (convo) {
+        setSelectedConversation(convo)
+      }
+    }
+  }, [conversationIdFromUrl, conversations, selectedConversation])
   const { data: messages = [] } = useMessages(selectedConversation?.id)
   const sendMessageMutation = useSendMessage()
   const markAsReadMutation = useMarkAsRead()
@@ -93,8 +107,8 @@ export default function Messages() {
               <p className="text-sm">no conversations yet</p>
               <p className="text-xs mt-2">
                 {profile.user_type === 'musician'
-                  ? 'apply to a gig to start chatting'
-                  : 'accept an application to start chatting'}
+                  ? 'browse venues and reach out, or apply to gigs'
+                  : 'browse musicians and reach out, or post a gig'}
               </p>
             </div>
           ) : (
@@ -255,5 +269,20 @@ export default function Messages() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function Messages() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
+          <span className="text-[var(--muted)] text-sm">loading messages...</span>
+        </div>
+      </div>
+    }>
+      <MessagesContent />
+    </Suspense>
   )
 }
