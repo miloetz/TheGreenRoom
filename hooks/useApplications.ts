@@ -59,6 +59,8 @@ export function useUpdateApplicationStatus() {
     onSuccess: (_, { gigId }) => {
       queryClient.invalidateQueries({ queryKey: applicationKeys.byGig(gigId) })
       queryClient.invalidateQueries({ queryKey: gigKeys.detail(gigId) })
+      // Also invalidate gig lists so status updates show on dashboard
+      queryClient.invalidateQueries({ queryKey: gigKeys.lists() })
     },
   })
 }

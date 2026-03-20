@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/client'
 import { Message } from '@/types'
+import { createNotification } from './notifications'
 
 const supabase = createClient()
 
@@ -25,6 +26,29 @@ export async function sendMessage(input: SendMessageInput): Promise<Message> {
 
   if (error) {
     throw new Error(error.message)
+  }
+
+  // Get conversation to find recipient
+  const { data: conversation } = await supabase
+    .from('conversations')
+    .select('musician_id, venue_id')
+    .eq('id', input.conversationId)
+    .single()
+
+  // Notify recipient of new message
+  if (conversation && data.sender) {
+    const recipientId = conversation.musician_id === input.senderId
+      ? conversation.venue_id
+      : conversation.musician_id
+
+    await createNotification({
+      user_id: recipientId,
+      type: 'message',
+      title: `New message from ${data.sender.name}`,
+      body: input.content.substring(0, 100) + (input.content.length > 100 ? '...' : ''),
+      link: `/messages?conversation=${input.conversationId}`,
+      related_id: input.conversationId,
+    })
   }
 
   return data
