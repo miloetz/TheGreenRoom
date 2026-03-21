@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "TheGreenRoom",
   description: "Gigging Platform",
+  icons: {
+    icon: "/thegreenroomicon.png",
+  },
 };
 
 export default function RootLayout({
